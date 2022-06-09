@@ -85,6 +85,9 @@ void setup()
   havsService.addCharacteristic(accAndMsCharacteristic);
   havsService.addCharacteristic(btHz);
   havsService.addCharacteristic(switchCharacteristic);
+  havsService.addCharacteristic(decibelCharacteristic);
+  havsService.addCharacteristic(tempCharacteristic);
+   
 
   BLE.addService(havsService);
 
@@ -123,9 +126,9 @@ void loop()
     setColor();
     restartBecauseNoColorForAWhile(); 
 
-    acc_x_wog = random(0, 15);
-    acc_y_wog = random(0, 12);
-    acc_z_wog = random(0, 2);
+    acc_x_wog = random(0, 150)/10.000;
+    acc_y_wog = random(0, 120)/10.000;
+    acc_z_wog = random(0, 20)/10.000;
     delay(10);
     
     float originalAcceleration = sqrt(pow(acc_x_wog, 2) + pow(acc_y_wog, 2) + pow(acc_z_wog, 2));
@@ -218,15 +221,8 @@ void restartBecauseImNotConnected(){
   #ifdef DEBUG
     Serial.println("I think I'm connected.. but I'm not... delaying 3 sec");
   #endif
-  delay(3000);
-
-  //  if (!(central.connected()))
-  //  {
-    // #ifdef DEBUG
-    //   Serial.println("Still not connected - RESETTING");
-    // #endif
-    NVIC_SystemReset();
-  // }
+  delay(2000);
+  NVIC_SystemReset();
 }
 
 void restartBecauseNoColorForAWhile(){
@@ -245,6 +241,10 @@ void sendToPhone(float avgValue, float deltaTime)
   multiSensorData.values[1] = deltaTime;
 
   accAndMsCharacteristic.writeValue(multiSensorData.bytes, sizeof multiSensorData.bytes);
+
+  decibelCharacteristic.writeValue(random(65, 95));    
+  tempCharacteristic.writeValue(random(15, 29));  
+  
   clearArrays();
 }
 
